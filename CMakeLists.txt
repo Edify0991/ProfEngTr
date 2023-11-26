@@ -11,7 +11,24 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  moveit_core
+  moveit_ros_planning
+  moveit_ros_planning_interface
+  moveit_ros_perception
+  rviz_visual_tools
+  moveit_visual_tools
+  pluginlib
+  tf2_ros
+  tf2_eigen
+  tf2_geometry_msgs
+  interactive_markers
 )
+
+find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED system filesystem date_time thread)
+
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake")
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -103,11 +120,23 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES arm_control
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES arm_control
+  CATKIN_DEPENDS 
+    roscpp 
+    rospy 
+    std_msgs
+    pluginlib
+    moveit_core
+    moveit_visual_tools
+    moveit_ros_planning_interface
+    interactive_markers
+    tf2_geometry_msgs
+  DEPENDS 
+    system _lib
+    Eigen3
 )
+
 
 ###########
 ## Build ##
