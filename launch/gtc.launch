@@ -1,0 +1,15 @@
+<launch>
+
+  <!--<include file="$(find kw_ft_sensor)/launch/kw_ft.launch">
+  </include>-->
+  <arg name = "record_dir"  default="/./home/cym/catkin_ws/record/hrc_gtc_data/"/>
+  <param name = "record_dir" type = "string" value = "$(arg record_dir)" />
+  <node name="get_ft_data" pkg = "arm_control" type = "get_ft_data" output = "screen" >
+  </node>
+  <node name="get_ur_data" pkg = "arm_control" type = "get_ur_data" output = "screen" >
+  </node>
+  <node name="gtc_main" pkg = "arm_control" type = "hrc_gtc_main" output = "screen" >
+  </node>
+  <node name="ur_move" pkg = "arm_control" type = "ur_move" output = "screen" >
+  </node>
+</launch>

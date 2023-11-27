@@ -22,10 +22,14 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_eigen
   tf2_geometry_msgs
   interactive_markers
+  message_generation
+  geometry_msgs
+  message_filters
 )
 
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED system filesystem date_time thread)
+find_package(ur_rtde REQUIRED)
 
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake")
 
@@ -44,7 +48,7 @@ set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake")
 ################################################
 
 ## To declare and build messages, services or actions from within this
-## package, follow these steps:
+## package, follow geometry_msgsthese steps:
 ## * Let MSG_DEP_SET be the set of packages whose message types you use in
 ##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
 ## * In the file package.xml:
@@ -64,11 +68,14 @@ set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake")
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  RobotData.msg
+  ProcessedFTData.msg
+  RobotData.msg 
+  RobotPose.msg
+  RobotControl.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -85,10 +92,11 @@ set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake")
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -132,6 +140,7 @@ catkin_package(
     moveit_ros_planning_interface
     interactive_markers
     tf2_geometry_msgs
+    message_runtime
   DEPENDS 
     system _lib
     Eigen3
@@ -145,8 +154,10 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
+  ~/Code/ProfEngTr_ws/devel/include
 )
 
 ## Declare a C++ library
@@ -154,10 +165,51 @@ include_directories(
 #   src/${PROJECT_NAME}/arm_control.cpp
 # )
 
+add_library(   ##用来手动链接.hpp和.cpp文件
+  Admittance          ##自定义的链接库名，后面用来识别
+  include/${PROJECT_NAME}/Admittance.h    ##.hpp的路径
+  src/Admittance.cpp     ##.cpp的路径
+)
+
+add_library(
+  process_robot_data
+  include/${PROJECT_NAME}/process_robot_data.h
+  src/process_robot_data.cpp
+)
+
+add_library(   ##用来手动链接.hpp和.cpp文件
+  process_ft_data          ##自定义的链接库名，后面用来识别
+  include/${PROJECT_NAME}/process_ft_data.h    ##.hpp的路径
+  src/process_ft_data.cpp     ##.cpp的路径
+)
+
+add_library(
+  generic_api
+  include/${PROJECT_NAME}/generic_api.h
+  src/generic_api.cpp
+)
+
+add_library(
+  ur_move
+  include/${PROJECT_NAME}/ur_move.h
+  src/ur_move.cpp
+)
+
+add_library(
+  record_node
+  include/${PROJECT_NAME}/record_node.h
+  src/record_node.cpp
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+# add_dependencies(Admittance_node 
+#   ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+#   ${catkin_EXPORTED_TARGETS}
+# )
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -178,6 +230,45 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+add_executable(rtde_test src/rtde_test.cpp)
+target_link_libraries(
+  rtde_test
+  ${catkin_LIBRARIES} 
+  ur_rtde::rtde
+)
+
+add_executable(Admittance_node src/Admittance_node.cpp)
+target_link_libraries(  
+  Admittance_node
+  ${catkin_LIBRARIES}
+  Admittance
+  process_robot_data
+  process_ft_data
+)
+
+add_executable(MoveAsynchronousExp src/MoveAsynchronousExp.cpp)
+target_link_libraries(
+  MoveAsynchronousExp
+  ${catkin_LIBRARIES} 
+  ur_rtde::rtde
+)
+
+add_executable(get_ftdata src/get_ftdata.cpp)
+target_link_libraries(
+  get_ftdata
+  ${catkin_LIBRARIES} 
+  ur_rtde::rtde
+)
+
+add_executable(get_urdata src/get_urdata.cpp)
+target_link_libraries(
+  get_urdata
+  ${catkin_LIBRARIES} 
+  ur_rtde::rtde
+)
+
+
 
 #############
 ## Install ##

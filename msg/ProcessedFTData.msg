@@ -1,0 +1,9 @@
+Header header
+float64[] origin_ft
+float64[] filtered_ft
+float64[] origin_gtced_ft
+float64[] filtered_gtced_ft
+float64[] origin_world
+float64[] filtered_world
+float64[] origin_gtced_world
+float64[] filtered_gtced_world

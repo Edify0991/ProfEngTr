@@ -50,6 +50,10 @@
 所以要强制所有的`libcurl`都指向ros要求使用的那个版本，针对`/home/ct/anaconda3/lib/`下的`libcurl`库文件的链接进行了更改。
 
 
+### 理论
+>+ 重力补偿
 
+参考网址[机械臂六维力传感器重力补偿原理][2]
 
 [1]: https://blog.csdn.net/weixin_44646763/article/details/128465671
+[2]: https://blog.csdn.net/zhang1079528541/article/details/129503851
